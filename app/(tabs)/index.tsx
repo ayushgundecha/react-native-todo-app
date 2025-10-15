@@ -1,8 +1,14 @@
+import { api } from "@/convex/_generated/api";
 import useTheme from "@/hooks/useTheme";
+import { useQuery } from "convex/react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
 export default function Index() {
   const {toggleDarkMode} = useTheme();
+
+  const todos = useQuery(api.todo.getTodos);
+  console.log(todos);
+
+
   return (
     <View
       style={styles.container}
@@ -21,7 +27,6 @@ const styles = StyleSheet.create({
     flex : 1,
     flexDirection : "column",
     justifyContent : "center",
-    alignItems : "flex-start",
-
+    alignItems : "center",
   }
 });
