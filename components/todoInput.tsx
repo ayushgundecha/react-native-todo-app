@@ -1,12 +1,60 @@
+import { createHomeStyles } from '@/assets/styles/home.styles'
+import { api } from '@/convex/_generated/api'
+import useTheme from '@/hooks/useTheme'
+import { Ionicons } from '@expo/vector-icons'
+import { useMutation } from 'convex/react'
+import { LinearGradient } from 'expo-linear-gradient'
 import React from 'react'
-import { Text, View } from 'react-native'
+import { Alert, TextInput, TouchableOpacity, View } from 'react-native'
+
 
 const TodoInput = () => {
-  return (
-    <View>
-      <Text>TodoInput</Text>
-    </View>
-  )
-}
+  const {colors} = useTheme();
+  const homeStyles = createHomeStyles(colors);
 
-export default TodoInput
+  const [newTodo, setNewTodo] = React.useState("");
+  const addTodo = useMutation(api.todo.addTodo);
+
+  const handleAddTodo = async () => {
+    if (newTodo.trim().length === 0) {
+      return;
+    }
+    try {
+
+    await addTodo({text: newTodo.trim()});
+    setNewTodo("");
+        
+    } catch (error) {
+        console.error("Error adding todo:", error);
+        Alert.alert("Error", "failed to add todo. Please try again.");
+    }
+   
+  };
+
+
+  return (
+    <View style={homeStyles.inputSection}>
+      <View style={homeStyles.inputWrapper}>
+        <TextInput
+          style={homeStyles.input}
+          placeholder="What needs to be done?"
+          value={newTodo}
+          onChangeText={setNewTodo}
+          onSubmitEditing={handleAddTodo}
+          placeholderTextColor={colors.textMuted}
+        />
+        <TouchableOpacity onPress={handleAddTodo} activeOpacity={0.8} disabled={!newTodo.trim()}>
+          <LinearGradient
+            colors={newTodo.trim() ? colors.gradients.primary : colors.gradients.muted}
+            style={[homeStyles.addButton, !newTodo.trim() && homeStyles.addButtonDisabled]}
+          >
+            <Ionicons name="add" size={24} color="#ffffff" />
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
+
+export default TodoInput 
